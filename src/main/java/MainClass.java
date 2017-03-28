@@ -5,10 +5,13 @@ import org.junit.BeforeClass;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.phantomjs.PhantomJSDriver;
 import org.openqa.selenium.phantomjs.PhantomJSDriverService;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -35,13 +38,34 @@ public class MainClass {
         String url = "https://passport.zhaopin.com/org/login";
 
         driver.get(url);
-        System.out.println(driver.getPageSource());
+        WebDriverWait wait = new WebDriverWait(driver, 10);
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("CheckCodeCapt")));
+        WebElement captchaButton = driver.findElement(By.cssSelector("#CheckCodeCapt"));
+        captchaButton.click();
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("captcha-img-sprites")));
+
+        WebElement captchaElement = driver.findElement(By.cssSelector("#captcha-img-sprites"));
+        WebElement area3 = captchaElement.findElement(By.cssSelector("i[data-num='34']"));
+//        area3.click();
+        if (driver instanceof JavascriptExecutor) {
+            ((JavascriptExecutor)driver).executeScript(clickCoordinateJS(area3.getLocation().getX(),area3.getLocation
+                    ().getY()+50));
+        }
 
         try {
             saveScreenShot((TakesScreenshot) driver, SAVE_DIR + "PhantomScreenShot.jpg");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String clickCoordinateJS(int x,int y){
+        String jsCode = "e = $.Event('click');\n" +
+                "        e.pageX = "+x+";\n" +
+                "        e.pageY = "+y+";\n" +
+                "        $(document).trigger(e);";
+        return jsCode;
     }
 
     private static BufferedImage getCaptcha(TakesScreenshot driver, WebElement captchaElement, String savePath) {
@@ -101,8 +125,16 @@ public class MainClass {
     }
 
     public static void prepareDriver() throws Exception {
-        String driver = DRIVER_PHANTOMJS;
-        mDriver = new PhantomJSDriver(sCaps);
+//        mDriver = new PhantomJSDriver(sCaps);
+
+        //        String CHROME_DRIVER_PATH = "G:\\woshou\\chromedriver_win32\\chromedriver.exe";
+//        System.setProperty("webdriver.chrome.driver", CHROME_DRIVER_PATH);
+//        mDriver = new ChromeDriver();
+
+        String FIREFOX_DRIVER_PATH = "G:\\woshou\\geckodriver-v0.15.0-win64\\geckodriver.exe";
+//        String FIREFOX_DRIVER_PATH = "G:\\woshou\\geckodriver-v0.11.1-win64\\geckodriver.exe";
+        System.setProperty("webdriver.gecko.driver", FIREFOX_DRIVER_PATH);
+        mDriver = new FirefoxDriver();
     }
 
     public static WebDriver getDriver() {
