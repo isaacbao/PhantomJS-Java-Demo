@@ -1,5 +1,3 @@
-package ghostdriver;
-
 import org.apache.commons.io.IOUtils;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -17,7 +15,7 @@ import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.function.Function;
 
-public class MainClass2 {
+public class FireFoxDemo {
 
     public static final HashMap<String, String> firstHashMap = new HashMap<>();
 
@@ -58,9 +56,9 @@ public class MainClass2 {
                     .getLocation().getY() + 13));
         }
 
-        Thread.sleep(5000);
-        WebElement captchaSubmitButton = driver.findElement(By.cssSelector("#captcha-submitCode"));
-        captchaSubmitButton.click();
+//        Thread.sleep(5000);
+//        WebElement captchaSubmitButton = driver.findElement(By.cssSelector("#captcha-submitCode"));
+//        captchaSubmitButton.click();
 
 
     }
